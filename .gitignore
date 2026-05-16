@@ -1,0 +1,19 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / Cursor (ne pas partager la config locale)
+.cursor/
+agent-transcripts/
+mcps/
+terminals/
+canvases/
+*.log
+
+# Node (si vous ajoutez des outils plus tard)
+node_modules/
+
+# Env / secrets
+.env
+.env.*

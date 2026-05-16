@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouthConnect — Create Activity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__logo">YouthConnect</a>
+      <nav class="navbar__nav" aria-label="Main navigation">
+        <a href="index.html" class="navbar__link">Discover</a>
+        <a href="activities.html" class="navbar__link">My activities</a>
+        <a href="profile.html" class="navbar__link">Profile</a>
+      </nav>
+      <div class="navbar__actions">
+        <a href="create.html" class="btn-create nav-auth-only hidden">+ Create activity</a>
+        <div class="navbar__auth-guest" id="navGuest">
+          <a href="login.html" class="btn-nav-text">Log in</a>
+          <a href="signup.html" class="btn-nav-signup">Sign up</a>
+        </div>
+        <div class="navbar__auth-user hidden" id="navUser">
+          <a href="profile.html" class="navbar__avatar" id="navAvatar" aria-label="Profile">YC</a>
+          <button type="button" class="btn-nav-logout" id="btnLogout">Log out</button>
+        </div>
+        <button type="button" class="navbar__hamburger" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <a href="index.html" class="mobile-menu__link">Discover</a>
+    <a href="activities.html" class="mobile-menu__link">My activities</a>
+    <a href="profile.html" class="mobile-menu__link">Profile</a>
+    <a href="create.html" class="btn-create nav-auth-only hidden">+ Create activity</a>
+    <div class="mobile-menu__auth" id="mobileNavGuest">
+      <a href="login.html" class="mobile-menu__link">Log in</a>
+      <a href="signup.html" class="mobile-menu__link">Sign up</a>
+    </div>
+    <div class="mobile-menu__auth hidden" id="mobileNavUser">
+      <button type="button" class="btn-nav-logout" id="btnLogoutMobile" style="width:100%">Log out</button>
+    </div>
+  </nav>
+
+  <main class="page-create">
+    <form class="form-card" id="createForm" novalidate>
+      <h1 class="form-card__title">Create an activity</h1>
+      <p class="form-card__subtitle">Share something fun and bring your community together.</p>
+
+      <div class="form-group">
+        <label class="form-label" for="title">
+          Title
+          <span class="form-label__counter" id="titleCounter">0/80</span>
+        </label>
+        <input type="text" id="title" name="title" class="form-input" placeholder="Give your activity a catchy name" maxlength="80" required>
+      </div>
+
+      <div class="form-group">
+        <span class="form-label">Category</span>
+        <div class="category-grid" id="categoryGrid" role="group" aria-label="Select category">
+          <button type="button" class="category-btn" data-category="sports"><span class="category-btn__emoji">⚽</span>Sports</button>
+          <button type="button" class="category-btn" data-category="music"><span class="category-btn__emoji">🎵</span>Music</button>
+          <button type="button" class="category-btn" data-category="art"><span class="category-btn__emoji">🎨</span>Art</button>
+          <button type="button" class="category-btn" data-category="tech"><span class="category-btn__emoji">💻</span>Tech</button>
+          <button type="button" class="category-btn" data-category="outdoor"><span class="category-btn__emoji">🌿</span>Outdoor</button>
+          <button type="button" class="category-btn" data-category="other"><span class="category-btn__emoji">+</span>Other</button>
+        </div>
+        <input type="hidden" name="category" id="categoryInput" value="">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="description">
+          Description
+          <span class="form-label__counter" id="descCounter">0/500</span>
+        </label>
+        <textarea id="description" name="description" class="form-textarea" placeholder="What's the plan? Who should join?" maxlength="500" required></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="date">Date</label>
+          <input type="date" id="date" name="date" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="time">Time</label>
+          <input type="time" id="time" name="time" class="form-input" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="location">Location</label>
+          <input type="text" id="location" name="location" class="form-input" placeholder="Where will it happen?" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="maxParticipants">Max participants</label>
+          <input type="number" id="maxParticipants" name="maxParticipants" class="form-input" placeholder="e.g. 20" min="1">
+          <p class="form-hint">Leave empty for unlimited</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <span class="form-label">Cover image <span style="font-weight:400;color:var(--color-text-dim)">(optional)</span></span>
+        <label class="upload-area" id="uploadArea">
+          <input type="file" id="coverImage" accept="image/*" aria-label="Upload cover image">
+          <div class="upload-area__content" id="uploadContent">
+            <div class="upload-area__icon">📷</div>
+            <p class="upload-area__text"><strong>Click to upload</strong> or drag and drop</p>
+            <p class="upload-area__text" style="font-size:0.75rem;margin-top:0.25rem">PNG, JPG up to 5MB</p>
+          </div>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <a href="index.html" class="btn btn--outline">Cancel</a>
+        <button type="submit" class="btn btn--primary">Publish activity <span aria-hidden="true">↗</span></button>
+      </div>
+    </form>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/app.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/create.js"></script>
+</body>
+</html>
