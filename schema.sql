@@ -7,7 +7,7 @@ create table users(
 	id int auto_increment primary key,
     username varchar(50) not null unique,
     email varchar(50) not null unique,
-    password varchar(50) not null,
+    password varchar(100) not null,
     role enum('user', 'admin') default 'user',
     created_at datetime default current_timestamp
 );
