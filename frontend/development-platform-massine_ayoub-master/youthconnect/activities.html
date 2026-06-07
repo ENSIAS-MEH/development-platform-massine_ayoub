@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouthConnect — My Activities</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__logo">YouthConnect</a>
+      <nav class="navbar__nav" aria-label="Main navigation">
+        <a href="index.html" class="navbar__link">Discover</a>
+        <a href="activities.html" class="navbar__link navbar__link--active">My activities</a>
+        <a href="profile.html" class="navbar__link">Profile</a>
+      </nav>
+      <div class="navbar__actions">
+        <a href="create.html" class="btn-create">+ Create activity</a>
+        <a href="profile.html" class="navbar__avatar" aria-label="Profile">YC</a>
+        <button type="button" class="navbar__hamburger" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <a href="index.html" class="mobile-menu__link">Discover</a>
+    <a href="activities.html" class="mobile-menu__link mobile-menu__link--active">My activities</a>
+    <a href="profile.html" class="mobile-menu__link">Profile</a>
+    <a href="create.html" class="btn-create">+ Create activity</a>
+  </nav>
+
+  <main class="main">
+    <div class="page-header" style="text-align:left;padding-top:0">
+      <h1 style="font-size:1.75rem;font-weight:800;margin-bottom:0.5rem">My activities</h1>
+      <p style="color:var(--color-text-muted);margin:0">Activities you've joined or created.</p>
+    </div>
+
+    <section style="margin-top:2rem">
+      <h2 class="section-title">JOINED</h2>
+      <div class="activity-grid" style="margin-bottom:2.5rem">
+        <article class="activity-card">
+          <div class="activity-card__banner activity-card__banner--sports">
+            <span class="activity-card__emoji">⚽</span>
+          </div>
+          <div class="activity-card__body">
+            <h3 class="activity-card__title">Football match</h3>
+            <p class="activity-card__meta">Sat, May 18 · Riverside Park</p>
+            <div class="activity-card__footer">
+              <div class="activity-card__left">
+                <span class="badge badge--sports">Sports</span>
+                <span class="activity-card__count">15/20</span>
+              </div>
+              <button type="button" class="btn-join joined">Joined</button>
+            </div>
+          </div>
+        </article>
+        <article class="activity-card">
+          <div class="activity-card__banner activity-card__banner--tech">
+            <span class="activity-card__emoji">💻</span>
+          </div>
+          <div class="activity-card__body">
+            <h3 class="activity-card__title">Hackathon</h3>
+            <p class="activity-card__meta">Sat, May 18 · Innovation Hub</p>
+            <div class="activity-card__footer">
+              <div class="activity-card__left">
+                <span class="badge badge--tech">Tech</span>
+                <span class="activity-card__count">25/30</span>
+              </div>
+              <button type="button" class="btn-join joined">Joined</button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <h2 class="section-title">CREATED BY YOU</h2>
+      <div class="empty-state" id="createdEmpty">
+        <div class="empty-state__icon">✨</div>
+        <h2>No activities yet</h2>
+        <p>Start something new and invite others to join.</p>
+        <a href="create.html" class="btn btn--primary" style="display:inline-flex;width:auto;flex:none">+ Create activity</a>
+      </div>
+      <div class="activity-grid" id="createdList" style="display:none;margin-top:1rem"></div>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    (function () {
+      const stored = JSON.parse(localStorage.getItem('youthconnect_created') || '[]');
+      const empty = document.getElementById('createdEmpty');
+      const list = document.getElementById('createdList');
+      if (!stored.length) return;
+
+      const emojiMap = { sports: '⚽', music: '🎵', art: '🎨', tech: '💻', outdoor: '🌿', other: '✨' };
+      empty.style.display = 'none';
+      list.style.display = 'grid';
+
+      stored.forEach((item) => {
+        const cat = item.category || 'other';
+        const bannerCat = cat === 'other' ? 'music' : cat;
+        const card = document.createElement('article');
+        card.className = 'activity-card';
+        card.innerHTML =
+          '<div class="activity-card__banner activity-card__banner--' +
+          bannerCat +
+          '"><span class="activity-card__emoji">' +
+          (emojiMap[cat] || '✨') +
+          '</span></div>' +
+          '<div class="activity-card__body"><h3 class="activity-card__title">' +
+          item.title +
+          '</h3><p class="activity-card__meta">' +
+          (item.date || 'TBD') +
+          ' · ' +
+          (item.location || 'TBD') +
+          '</p><div class="activity-card__footer"><span class="badge badge--' +
+          bannerCat +
+          '">' +
+          cat.charAt(0).toUpperCase() +
+          cat.slice(1) +
+          '</span><span class="activity-card__count">1/' +
+          (item.maxParticipants === 'unlimited' ? '∞' : item.maxParticipants) +
+          '</span></div></div>';
+        list.appendChild(card);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouthConnect — Profile</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__logo">YouthConnect</a>
+      <nav class="navbar__nav" aria-label="Main navigation">
+        <a href="index.html" class="navbar__link">Discover</a>
+        <a href="activities.html" class="navbar__link">My activities</a>
+        <a href="profile.html" class="navbar__link navbar__link--active">Profile</a>
+      </nav>
+      <div class="navbar__actions">
+        <a href="create.html" class="btn-create nav-auth-only hidden">+ Create activity</a>
+        <div class="navbar__auth-guest" id="navGuest">
+          <a href="login.html" class="btn-nav-text">Log in</a>
+          <a href="signup.html" class="btn-nav-signup">Sign up</a>
+        </div>
+        <div class="navbar__auth-user hidden" id="navUser">
+          <a href="profile.html" class="navbar__avatar" id="navAvatar" aria-label="Profile">YC</a>
+          <button type="button" class="btn-nav-logout" id="btnLogout">Log out</button>
+        </div>
+        <button type="button" class="navbar__hamburger" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <a href="index.html" class="mobile-menu__link">Discover</a>
+    <a href="activities.html" class="mobile-menu__link">My activities</a>
+    <a href="profile.html" class="mobile-menu__link mobile-menu__link--active">Profile</a>
+    <a href="create.html" class="btn-create nav-auth-only hidden">+ Create activity</a>
+    <div class="mobile-menu__auth" id="mobileNavGuest">
+      <a href="login.html" class="mobile-menu__link">Log in</a>
+      <a href="signup.html" class="mobile-menu__link">Sign up</a>
+    </div>
+    <div class="mobile-menu__auth hidden" id="mobileNavUser">
+      <button type="button" class="btn-nav-logout" id="btnLogoutMobile" style="width:100%">Log out</button>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="profile-card">
+      <div class="profile-card__avatar" id="profileAvatar">YC</div>
+      <h1 class="profile-card__name" id="profileName">Alex Chen</h1>
+      <p id="profileEmail" style="color:var(--color-text-muted);font-size:0.9375rem;margin-bottom:0.5rem"></p>
+      <p class="profile-card__bio">Passionate about sports, music &amp; building community. Always down for a new adventure.</p>
+      <button type="button" class="btn-nav-logout" id="profileLogout" style="margin-bottom:1.5rem">Log out</button>
+      <div class="profile-stats">
+        <div>
+          <p class="profile-stat__value">12</p>
+          <p class="profile-stat__label">Joined</p>
+        </div>
+        <div>
+          <p class="profile-stat__value">3</p>
+          <p class="profile-stat__label">Created</p>
+        </div>
+        <div>
+          <p class="profile-stat__value">48</p>
+          <p class="profile-stat__label">Connections</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+  (async function () {
+    const session = JSON.parse(localStorage.getItem('youthconnect_session') || 'null');
+    if (!session) return;
+
+    const API = 'http://localhost:8080/api';
+
+    try {
+      const [joinedRes, createdRes] = await Promise.all([
+        fetch(`${API}/activities/joined?email=${session.email}`),
+        fetch(`${API}/activities/created?email=${session.email}`)
+      ]);
+
+      const joined = await joinedRes.json();
+      const created = await createdRes.json();
+
+      const stats = document.querySelectorAll('.profile-stat__value');
+      if (stats[0]) stats[0].textContent = joined.length;
+      if (stats[1]) stats[1].textContent = created.length;
+      if (stats[2]) stats[2].textContent = joined.length + created.length;
+
+    } catch(e) {
+      console.error('Could not load profile stats:', e);
+    }
+  })();
+</script>
+</body>
+</html>
