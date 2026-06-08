@@ -75,11 +75,16 @@ public class ActivityService {
         Activity activity = activityRepository.findById(activityId)
             .orElseThrow(() -> new RuntimeException("Activity not found"));
 
-        if (!activity.getCreatedBy().getId().equals(user.getId()) 
+        if (!activity.getCreatedBy().getId().equals(user.getId())
             && user.getRole() != User.Role.ADMIN) {
             throw new RuntimeException("You are not authorized to delete this activity");
         }
 
+        
+        List<Participation> participations = participationRepository.findByActivity(activity);
+        participationRepository.deleteAll(participations);
+
+        
         activityRepository.delete(activity);
     }
 }
