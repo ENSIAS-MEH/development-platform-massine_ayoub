@@ -47,8 +47,7 @@ Le backend suit un modèle d’architecture en couches :
 * **Frontend :** HTML, CSS, JavaScript
 * **Backend :** Spring Boot (Java)
 * **Base de données :** MySQL
-* **ORM :** Spring Data JPA / Hibernate
-* **Sécurité :** Spring Security + chiffrement des mots de passe avec BCrypt
+* **Sécurité :** chiffrement des mots de passe avec BCrypt
 * **DevOps :** Docker
 
 ## DevOps
