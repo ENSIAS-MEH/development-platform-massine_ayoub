@@ -75,9 +75,8 @@ docker-compose up --build
 
 ### Exécution en local
 
-1. Démarrer MySQL sur le port 3306
-2. Lancer l’application Spring Boot dans Eclipse
-3. Servir le frontend avec `python -m http.server 5500`
+1. Lancer l’application Spring Boot dans Eclipse
+2. Servir le frontend avec `python -m http.server 5500`
 
 ## Équipe
 
