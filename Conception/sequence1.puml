@@ -1,0 +1,90 @@
+@startuml sequence_rejoindre_activite
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceParticipantBorderColor #0f766e
+skinparam sequenceParticipantBackgroundColor #0d9488
+skinparam sequenceParticipantFontColor white
+skinparam sequenceLifeLineBorderColor #0f766e
+skinparam sequenceMessageAlignment center
+skinparam backgroundColor white
+skinparam noteBorderColor #d97706
+skinparam noteBackgroundColor #fef3c7
+
+title Diagramme de séquence — Rejoindre une activité
+
+actor "Utilisateur" as U
+participant "index.html\n(Frontend)" as FE
+participant "ActivityController" as AC
+participant "UserService" as US
+participant "ActivityService" as AS
+participant "UserRepository" as UR
+participant "ActivityRepository" as AR
+participant "ParticipationRepository" as PR
+database "MySQL" as DB
+
+U -> FE : Clique sur "Join"\nsur une activité
+
+FE -> FE : Vérifie si connecté\n(localStorage)
+
+alt Non connecté
+  FE --> U : Redirige vers login.html
+else Connecté
+  FE -> AC : POST /api/activities/{id}/join?email=...
+
+  AC -> US : findByEmail(email)
+  US -> UR : findByEmail(email)
+  UR -> DB : SELECT * FROM users WHERE email=...
+  DB --> UR : User
+  UR --> US : User
+  US --> AC : User
+
+  AC -> AS : joinActivity(activityId, user)
+
+  AS -> AR : findById(activityId)
+  AR -> DB : SELECT * FROM activities WHERE id=...
+  DB --> AR : Activity
+  AR --> AS : Activity
+
+  AS -> PR : existsByUserIdAndActivityId(userId, activityId)
+  PR -> DB : SELECT COUNT ...
+  DB --> PR : résultat
+  PR --> AS : true / false
+
+  alt Déjà inscrit
+    AS --> AC : RuntimeException("You already joined this activity")
+    AC --> FE : 400 Bad Request
+    FE --> U : Notification d'erreur
+  else Pas encore inscrit
+    alt maxParticipants défini
+      AS -> PR : findByActivity(activity).size()
+      PR -> DB : SELECT * FROM participations WHERE activity_id=...
+      DB --> PR : liste
+      PR --> AS : count
+
+      alt Activité complète
+        AS --> AC : RuntimeException("This activity is full")
+        AC --> FE : 400 Bad Request
+        FE --> U : "Activité complète"
+      else Places disponibles
+        AS -> PR : save(participation)
+        PR -> DB : INSERT INTO participations ...
+        DB --> PR : Participation sauvegardée
+        PR --> AS : Participation
+        AS --> AC : Participation
+        AC --> FE : 200 OK { participation }
+        FE -> FE : Bouton → "Joined"\nCompteur + 1
+        FE --> U : Confirmation visuelle
+      end
+    else Pas de limite
+      AS -> PR : save(participation)
+      PR -> DB : INSERT INTO participations ...
+      DB --> PR : Participation
+      PR --> AS : Participation
+      AS --> AC : Participation
+      AC --> FE : 200 OK
+      FE -> FE : Bouton → "Joined"\nCompteur + 1
+      FE --> U : Confirmation visuelle
+    end
+  end
+end
+
+@enduml

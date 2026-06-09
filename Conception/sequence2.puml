@@ -1,0 +1,64 @@
+@startuml sequence_inscription
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceParticipantBorderColor #2d3a8c
+skinparam sequenceParticipantBackgroundColor #4f5fc4
+skinparam sequenceParticipantFontColor white
+skinparam sequenceLifeLineBorderColor #2d3a8c
+skinparam sequenceMessageAlignment center
+skinparam backgroundColor white
+skinparam noteBorderColor #d97706
+skinparam noteBackgroundColor #fef3c7
+
+title Diagramme de séquence — Inscription d'un utilisateur
+
+actor "Utilisateur" as U
+participant "signup.html\n(Frontend)" as FE
+participant "AuthController" as AC
+participant "UserService" as US
+participant "UserRepository" as UR
+database "MySQL" as DB
+
+U -> FE : Remplit le formulaire\n(nom, email, mot de passe)
+FE -> FE : Valide les champs\n(mot de passe confirmé, longueur ≥ 6)
+
+alt Validation échouée
+  FE --> U : Affiche message d'erreur
+else Validation réussie
+  FE -> AC : POST /api/auth/register\n{ name, email, password }
+  AC -> US : register(user)
+  US -> UR : existsByEmail(email)
+  UR -> DB : SELECT ...
+  DB --> UR : résultat
+  UR --> US : true / false
+
+  alt Email déjà utilisé
+    US --> AC : RuntimeException("Email already in use")
+    AC --> FE : 400 Bad Request
+    FE --> U : "Email déjà utilisé"
+  else Email disponible
+    US -> UR : existsByUsername(username)
+    UR -> DB : SELECT ...
+    DB --> UR : résultat
+    UR --> US : true / false
+
+    alt Username déjà pris
+      US --> AC : RuntimeException("Username already taken")
+      AC --> FE : 400 Bad Request
+      FE --> U : "Nom d'utilisateur déjà pris"
+    else Tout est disponible
+      US -> US : passwordEncoder.encode(password)
+      US -> US : user.setRole(USER)
+      US -> UR : save(user)
+      UR -> DB : INSERT INTO users ...
+      DB --> UR : user sauvegardé
+      UR --> US : User
+      US --> AC : User
+      AC -> AC : user.setPassword(null)
+      AC --> FE : 200 OK { id, username, email, role }
+      FE -> FE : Stocke user dans localStorage
+      FE --> U : Redirige vers index.html
+    end
+  end
+end
+
+@enduml

@@ -1,0 +1,130 @@
+@startuml class_diagram
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam backgroundColor white
+skinparam class {
+  BorderColor #2d3a8c
+  HeaderBackgroundColor #4f5fc4
+  HeaderFontColor white
+  FontColor #1a1a2e
+  ArrowColor #2d3a8c
+}
+
+' ─────────── ENTITIES ───────────
+class User {
+  - id : Integer
+  - username : String
+  - email : String
+  - password : String
+  - role : Role
+  - createdAt : LocalDateTime
+  + onCreate() : void
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+class Activity {
+  - id : Integer
+  - title : String
+  - description : String
+  - location : String
+  - activityDate : LocalDateTime
+  - maxParticipants : Integer
+  - coverImage : String
+  - createdAt : LocalDateTime
+  + onCreate() : void
+}
+
+class Category {
+  - id : Integer
+  - name : String
+}
+
+class Participation {
+  - id : Integer
+  - joinedAt : LocalDateTime
+  + onCreate() : void
+}
+
+' ─────────── REPOSITORIES ───────────
+interface UserRepository {
+  + findByEmail(email : String) : Optional<User>
+  + findByUsername(username : String) : Optional<User>
+  + existsByEmail(email : String) : boolean
+  + existsByUsername(username : String) : boolean
+}
+
+interface ActivityRepository {
+  + findByCreatedBy(user : User) : List<Activity>
+  + findByCategoryId(categoryId : Integer) : List<Activity>
+}
+
+interface ParticipationRepository {
+  + findByUser(user : User) : List<Participation>
+  + findByActivity(activity : Activity) : List<Participation>
+  + findByUserAndActivity(user : User, activity : Activity) : Optional<Participation>
+  + existsByUserAndActivity(user : User, activity : Activity) : boolean
+  + existsByUserIdAndActivityId(userId : Integer, activityId : Integer) : boolean
+}
+
+' ─────────── SERVICES ───────────
+class UserService {
+  + register(user : User) : User
+  + findByEmail(email : String) : User
+}
+
+class ActivityService {
+  + getAllActivities() : List<Activity>
+  + getActivitiesByUser(user : User) : List<Activity>
+  + getJoinedActivities(user : User) : List<Participation>
+  + createActivity(activity : Activity, creator : User) : Activity
+  + joinActivity(activityId : Integer, user : User) : Participation
+  + leaveActivity(activityId : Integer, user : User) : void
+  + deleteActivity(activityId : Integer, user : User) : void
+}
+
+' ─────────── CONTROLLERS ───────────
+class AuthController {
+  + register(body : Map) : ResponseEntity
+  + login(body : Map) : ResponseEntity
+}
+
+class ActivityController {
+  + getAllActivities() : ResponseEntity
+  + createActivity(activity : Activity, email : String) : ResponseEntity
+  + joinActivity(id : Integer, email : String) : ResponseEntity
+  + leaveActivity(id : Integer, email : String) : ResponseEntity
+  + getCreatedActivities(email : String) : ResponseEntity
+  + getJoinedActivities(email : String) : ResponseEntity
+  + getParticipantCount(id : Integer) : ResponseEntity
+  + deleteActivity(id : Integer, email : String) : ResponseEntity
+}
+
+' ─────────── RELATIONS ───────────
+User "1" -- "0..*" Activity : crée >
+User "1" -- "0..*" Participation : participe >
+Activity "1" -- "0..*" Participation : concerne >
+Activity "0..*" --> "1" Category : appartient à >
+User --> Role
+
+UserService --> UserRepository
+UserService --> User
+ActivityService --> ActivityRepository
+ActivityService --> ParticipationRepository
+ActivityService --> Activity
+ActivityService --> Participation
+
+AuthController --> UserService
+ActivityController --> ActivityService
+ActivityController --> UserService
+ActivityController --> ActivityRepository
+ActivityController --> ParticipationRepository
+
+UserRepository ..> User : <<use>>
+ActivityRepository ..> Activity : <<use>>
+ParticipationRepository ..> Participation : <<use>>
+
+@enduml
